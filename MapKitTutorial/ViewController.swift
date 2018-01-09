@@ -1,19 +1,12 @@
-//
-//  ViewController.swift
-//  MapKitTutorial
-//
-//  Created by Robert Chen on 12/23/15.
-//  Copyright © 2015 Thorn Technologies. All rights reserved.
-//
 
 import UIKit
 import MapKit
 
-protocol HandleMapSearch: class {
-    func dropPinZoomIn(placemark:MKPlacemark)
-}
+//protocol HandleMapSearch: class {
+   //func dropPinZoomIn(placemark:MKPlacemark)
+//}
 
-class ViewController: UIViewController,CLLocationManagerDelegate,MKMapViewDelegate,HandleMapSearch {
+class ViewController: UIViewController,CLLocationManagerDelegate,MKMapViewDelegate {
     
     var selectedPin: MKPlacemark?
     var resultSearchController: UISearchController!
@@ -21,34 +14,36 @@ class ViewController: UIViewController,CLLocationManagerDelegate,MKMapViewDelega
     let locationManager = CLLocationManager()
     
     @IBOutlet weak var mapView: MKMapView!
- 
+    @IBOutlet var searchBar: UISearchBar!
+    
+    var selectedValue = String()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        print("View Controller did load called............")
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
         locationManager.requestWhenInUseAuthorization()
         locationManager.requestLocation()
+        locationManager.startUpdatingLocation()
         
         let locationSearchTable = storyboard!.instantiateViewController(withIdentifier: "LocationSearchTable") as! LocationSearchTable
         
         resultSearchController = UISearchController(searchResultsController: locationSearchTable)
         resultSearchController.searchResultsUpdater = locationSearchTable
        
-        let searchBar = resultSearchController!.searchBar
-        searchBar.sizeToFit()
-        searchBar.placeholder = "Search for places"
+        searchBar = resultSearchController!.searchBar
         
         navigationItem.titleView = resultSearchController?.searchBar
        
         resultSearchController.hidesNavigationBarDuringPresentation = false
         resultSearchController.dimsBackgroundDuringPresentation = true
-        
+       
         definesPresentationContext = true
         
         locationSearchTable.mapView = mapView
-        locationSearchTable.handleMapSearchDelegate = self
-        
+       // locationSearchTable.handleMapSearchDelegate = self
     }
     
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
@@ -64,14 +59,15 @@ class ViewController: UIViewController,CLLocationManagerDelegate,MKMapViewDelega
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         if locations.first != nil {
             print("location:: (location)")
-            let span = MKCoordinateSpanMake(0.05, 0.05)
+            let span = MKCoordinateSpanMake(0.05, 0.15)
             let region = MKCoordinateRegion(center: locations[0].coordinate, span: span)
             
             mapView.setRegion(region, animated: true)
+            mapView.showsUserLocation = true
         }
     }
     
-    func getDirections(){
+    /*func getDirections(){
         guard let selectedPin = selectedPin else { return }
         let mapItem = MKMapItem(placemark: selectedPin)
         let launchOptions = [MKLaunchOptionsDirectionsModeKey: MKLaunchOptionsDirectionsModeDriving]
@@ -93,7 +89,7 @@ class ViewController: UIViewController,CLLocationManagerDelegate,MKMapViewDelega
         
         let smallSquare = CGSize(width: 30, height: 30)
         let button = UIButton(frame: CGRect(origin:.zero, size: smallSquare))
-        //button.setBackgroundImage(UIImage(named: "car"), for: .Normal)
+        button.setBackgroundImage(UIImage(named: "car"), for:.normal)
         button.addTarget(self, action: #selector(ViewController.getDirections), for: .touchUpInside)
         pinView?.leftCalloutAccessoryView = button
        
@@ -122,8 +118,8 @@ class ViewController: UIViewController,CLLocationManagerDelegate,MKMapViewDelega
         let region = MKCoordinateRegionMake(placemark.coordinate, span)
         
         mapView.setRegion(region, animated: true)
-    
-    }
+        
+    }*/
 }
 
 

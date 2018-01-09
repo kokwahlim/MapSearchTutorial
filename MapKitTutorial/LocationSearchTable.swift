@@ -1,24 +1,16 @@
-//
-//  LocationSearchTable.swift
-//  MapKitTutorial
-//
-//  Created by Robert Chen on 12/28/15.
-//  Copyright © 2015 Thorn Technologies. All rights reserved.
-//
+
 
 import UIKit
 import MapKit
 
 class LocationSearchTable: UITableViewController {
     
-    weak var handleMapSearchDelegate: HandleMapSearch?
+   // weak var handleMapSearchDelegate: HandleMapSearch?
     
     var selectedValue = String()
     var matchingItems: [MKMapItem] = []
     var mapView: MKMapView?
     
-    
-   
     func parseAddress(selectedItem:MKPlacemark) -> String {
         
         // put a space between "4" and "Melrose Place"
@@ -73,10 +65,8 @@ extension LocationSearchTable : UISearchResultsUpdating {
         }
     }
     
-    
     func updateSearchResultsForSearchController(searchController: UISearchController) {
-        guard let mapView = mapView,
-            let searchBarText = searchController.searchBar.text else { return }
+        guard let mapView = mapView,let searchBarText = searchController.searchBar.text else { return }
         
         let request = MKLocalSearchRequest()
         request.naturalLanguageQuery = searchBarText
@@ -100,12 +90,19 @@ extension LocationSearchTable {
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let selectedItem = matchingItems[indexPath.row].placemark
-        handleMapSearchDelegate?.dropPinZoomIn(placemark: selectedItem)
-       
-        selectedValue = matchingItems[indexPath.row].name!
-      
-        dismiss(animated: true, completion: nil)
+        //let selectedItem = matchingItems[indexPath.row].placemark
+        //handleMapSearchDelegate?.dropPinZoomIn(placemark: selectedItem)
+        
+        self.selectedValue = matchingItems[indexPath.row].name!
+        self.performSegue(withIdentifier: "locationSeque", sender: self)
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        //if(segue.identifier == "locationSegue"){
+            let mvController = segue.destination as! MainViewController
+            mvController.searchValue = selectedValue
+        
+        //}
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
